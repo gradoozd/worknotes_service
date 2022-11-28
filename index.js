@@ -28,19 +28,17 @@ app.post('/notes', (req, res, next) => {
 
 // Получение всех записей
 app.get('/notes', (req, res, next) => {
-    Note.getAll(
-        (err, notes) => {
-            if (err) return next(err)
-            res.json({
-                theme: notes.theme,
-                question: notes.question,
-                decision: notes.decision,
-                decidedBy: notes.from_who,
-                created: notes.date
-            })
-            res.status(200)
-        }
-    )
+    Note.getAll((err, notes) => {
+        if (err) return next(err)
+        if (!notes) res.status(404).end()
+        if (notes) {res.status(200).json({
+            theme: notes.theme,
+            question: notes.question,
+            decision: notes.decision,
+            decidedBy: notes.from_who,
+            created: notes.date
+        })}
+    })
 })
 
 // Получение одной записи
