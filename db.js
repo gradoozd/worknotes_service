@@ -36,7 +36,8 @@ class Note {
         db.get('SELECT theme, question, decision, from_who, date FROM note WHERE id = ?', noteId, cb)
     }
     static find(searchBy, cb) {
-        db.get('SELECT theme, question, decision, from_who, date FROM note WHERE theme LIKE ?', searchBy, cb)
+        var query = `SELECT theme, question, decision, from_who, date FROM note WHERE theme LIKE "%${searchBy}%"`
+        db.get(query, cb)
     }
 }
 
