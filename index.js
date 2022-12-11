@@ -1,6 +1,7 @@
-// require('dotenv').config()
+require('dotenv').config()
 
 const express = require('express')
+const jwt = require('jsonwebtoken')
 const app = express()
 const bodyParser = require('body-parser')
 var qs = require('qs')
@@ -13,6 +14,19 @@ app.use(bodyParser.urlencoded( { extended: true }))
 app.use(bodyParser.json())
 app.use('query parser', function (str) {
     return qs.parse(str, { /* custom options */ })
+})
+
+// Генерация токена
+const token = jwt.sign({
+    date: new Date()
+}, process.env.CLIENT, {expiresIn: 60 * 60})
+
+
+// Логин клиента
+app.post('/connect', (req, res, next) => {
+    if (req.get('Client') != process.env.CLIENT) res.status(403).end()
+    if (!req.get('Client')) res.status(403).end()
+    else res.status(200).json({token: token})
 })
 
 // Добавление записи
@@ -28,7 +42,8 @@ app.post('/notes', (req, res, next) => {
 
 // Получение всех записей
 app.get('/notes', (req, res, next) => {
-    Note.getAll((err, notes) => {
+    if (req.get('Token') != token) res.status(403).end()
+    else {Note.getAll((err, notes) => {
         if (err) return next(err)
         if (!notes) res.status(404).end()
         if (notes) {res.status(200).json({
@@ -38,7 +53,7 @@ app.get('/notes', (req, res, next) => {
             decidedBy: notes.from_who,
             created: notes.date
         })}
-    })
+    })}
 })
 
 // Получение одной записи
