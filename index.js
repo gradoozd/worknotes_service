@@ -24,8 +24,7 @@ const token = jwt.sign({
 
 // Логин клиента
 app.post('/connect', (req, res, next) => {
-    if (req.get('Client') != process.env.CLIENT) res.status(403).end()
-    if (!req.get('Client')) res.status(403).end()
+    if (!req.get('Client') || req.get('Client') != process.env.CLIENT) res.status(403).end()
     else res.status(200).json({token: token})
 })
 
