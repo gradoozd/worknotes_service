@@ -31,13 +31,14 @@ app.post('/connect', (req, res, next) => {
 
 // Добавление записи
 app.post('/notes', (req, res, next) => {
-    Note.saveNew(
+    if (req.get('Token') != token) res.status(403).end()
+    else {Note.saveNew(
         {theme: req.body.theme, question: req.body.question, decision: req.body.decision, fromWho: req.body.fromWho, date: req.body.date},
         (err, note) => {
             if (err) return next(err)
             res.status(200).end()
         }
-    )
+    )}
 })
 
 // Получение всех записей
@@ -58,7 +59,8 @@ app.get('/notes', (req, res, next) => {
 
 // Получение одной записи
 app.get('/notes/:noteId', (req, res, next) => {
-    Note.getNote(req.params.noteId, (err, note) => {
+    if (req.get('Token') != token) res.status(403).end()
+    else {Note.getNote(req.params.noteId, (err, note) => {
         if (err) return next(err)
         if (!note) res.status(404).end()
         if (note) {res.status(200).json({
@@ -68,12 +70,13 @@ app.get('/notes/:noteId', (req, res, next) => {
             decidedBy: note.from_who,
             created: note.date
         })}
-    })
+    })}
 })
 
 // Поиск заметок
 app.get('/search-notes', (req, res, next) => {
-    Note.find(req.query.searchBy, (err, result) => {
+    if (req.get('Token') != token) res.status(403).end()
+    else {Note.find(req.query.searchBy, (err, result) => {
         if (err) return next(err)
         if (!result) {
             res.status(404).end()
@@ -85,7 +88,7 @@ app.get('/search-notes', (req, res, next) => {
             decidedBy: result.from_who,
             created: result.date
         })
-    })
+    })}
 })
 
 app.listen(app.get('port'), () => {
