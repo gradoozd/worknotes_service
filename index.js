@@ -4,6 +4,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const app = express()
 const bodyParser = require('body-parser')
+var fetch = require('node-fetch')
 var qs = require('qs')
 
 const Note = require('./db').Note
@@ -24,13 +25,13 @@ const token = jwt.sign({
 
 // Логин клиента
 app.post('/connect', (req, res, next) => {
-    if (!req.get('Client') || req.get('Client') != process.env.CLIENT) res.status(403).end()
-    else res.status(200).json({token: token})
+    if (!req.get('Client') || req.get('Client') != process.env.CLIENT) res.status(401).end()
+    else res.status(200).json({token: `Bearer ${token}`})
 })
 
 // Добавление записи
 app.post('/notes', (req, res, next) => {
-    if (req.get('Token') != token) res.status(403).end()
+    if (req.get('Token') != `Bearer ${token}`) res.status(401).end()
     else {Note.saveNew(
         {theme: req.body.theme, question: req.body.question, decision: req.body.decision, fromWho: req.body.fromWho, date: req.body.date},
         (err, note) => {
@@ -42,7 +43,7 @@ app.post('/notes', (req, res, next) => {
 
 // Получение всех записей
 app.get('/notes', (req, res, next) => {
-    if (req.get('Token') != token) res.status(403).end()
+    if (req.get('Token') != `Bearer ${token}`) res.status(401).end()
     else {Note.getAll((err, notes) => {
         if (err) return next(err)
         if (!notes) res.status(404).end()
@@ -58,7 +59,7 @@ app.get('/notes', (req, res, next) => {
 
 // Получение одной записи
 app.get('/notes/:noteId', (req, res, next) => {
-    if (req.get('Token') != token) res.status(403).end()
+    if (req.get('Token') != `Bearer ${token}`) res.status(401).end()
     else {Note.getNote(req.params.noteId, (err, note) => {
         if (err) return next(err)
         if (!note) res.status(404).end()
@@ -74,7 +75,7 @@ app.get('/notes/:noteId', (req, res, next) => {
 
 // Поиск заметок
 app.get('/search-notes', (req, res, next) => {
-    if (req.get('Token') != token) res.status(403).end()
+    if (req.get('Token') != `Bearer ${token}`) res.status(401).end()
     else {Note.find(req.query.searchBy, (err, result) => {
         if (err) return next(err)
         if (!result) {
@@ -94,8 +95,15 @@ app.listen(app.get('port'), () => {
     console.log(`You are online at ${app.get('port')}`)
 })
 
-// fetch(process.env.SENDER + '/decision', {
-//     method: 'POST',
-//     body: rejectionMessage,
-//     headers: { 'Content-Type': 'application/xml' }
-// })
+// Эксперимент с получением синхронного ответа
+// fetch(process.env.SERVER + '/decision', {
+//     method: 'POST'
+// }).then((response) => {
+//     return response.json();
+// }).then((data) => {
+//     printResponse(data)
+// });
+
+// function printResponse (response) {
+//     console.log(response)
+// }
