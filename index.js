@@ -48,7 +48,7 @@ app.get('/notes', (req, res, next) => {
         if (err) return next(err)
         if (!notes) res.status(404).end()
         if (notes) {
-            let data = []
+            var data = []
             if (notes.length > 1) {
                 notes.forEach((item) => {
                     data.push({
@@ -60,13 +60,13 @@ app.get('/notes', (req, res, next) => {
                     })
                 })
             }
-            if (notes.length <= 1) data = [{
+            if (notes.length <= 1) {data = [{
                 theme: notes.theme,
                 question: notes.question,
                 decision: notes.decision,
                 decidedBy: notes.from_who,
                 created: notes.date
-            }]
+            }]}
             res.status(200).json({
                 data
             })
