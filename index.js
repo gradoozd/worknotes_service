@@ -60,13 +60,13 @@ app.get('/notes', (req, res, next) => {
                     })
                 })
             }
-            if (notes.length <= 1) {data = [{
+            else data = [{
                 theme: notes.theme,
                 question: notes.question,
                 decision: notes.decision,
                 decidedBy: notes.from_who,
                 created: notes.date
-            }]}
+            }]
             res.status(200).json({
                 data
             })
