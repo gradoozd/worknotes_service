@@ -22,6 +22,10 @@ db.serialize(() => {
 //     const sql = "SELECT * FROM note WHERE id = 2"
 //     db.run(sql)
 // })
+// db.serialize(() => {
+//     const sql = "DELETE FROM note WHERE id = 2"
+//     db.run(sql)
+// })
 
 // Запись
 class Note {

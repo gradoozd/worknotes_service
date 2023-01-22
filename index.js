@@ -48,8 +48,8 @@ app.get('/notes', (req, res, next) => {
         if (err) return next(err)
         if (!notes) res.status(404).end()
         if (notes) {
-            var data = []
             if (notes.length > 1) {
+                var data = []
                 notes.forEach((item) => {
                     data.push({
                         theme: item.theme,
@@ -59,17 +59,22 @@ app.get('/notes', (req, res, next) => {
                         created: item.date
                     })
                 })
+                res.status(200).json({
+                    data
+                })
             }
-            else data = [{
-                theme: notes.theme,
-                question: notes.question,
-                decision: notes.decision,
-                decidedBy: notes.from_who,
-                created: notes.date
-            }]
-            res.status(200).json({
-                data
-            })
+            else {
+                var data = [{
+                    theme: notes[0].theme,
+                    question: notes[0].question,
+                    decision: notes[0].decision,
+                    decidedBy: notes[0].from_who,
+                    created: notes[0].date
+                }]
+                res.status(200).json({
+                    data
+                })
+            }
         }
     })}
 })
