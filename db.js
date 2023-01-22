@@ -30,7 +30,8 @@ class Note {
         db.run(sql, data.theme, data.question, data.decision, data.fromWho, data.date, cb)
     }
     static getAll(cb) {
-        db.get('SELECT theme, question, decision, from_who, date FROM note', cb)
+        let query = 'SELECT theme, question, decision, from_who, date FROM note'
+        db.all(query, cb)
     }
     static getNote(noteId, cb) {
         db.get('SELECT theme, question, decision, from_who, date FROM note WHERE id = ?', noteId, cb)

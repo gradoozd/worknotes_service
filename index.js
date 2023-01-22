@@ -47,13 +47,30 @@ app.get('/notes', (req, res, next) => {
     else {Note.getAll((err, notes) => {
         if (err) return next(err)
         if (!notes) res.status(404).end()
-        if (notes) {res.status(200).json({
-            theme: notes.theme,
-            question: notes.question,
-            decision: notes.decision,
-            decidedBy: notes.from_who,
-            created: notes.date
-        })}
+        if (notes) {
+            let data = []
+            if (notes.length > 1) {
+                notes.forEach((item) => {
+                    data.push({
+                        theme: item.theme,
+                        question: item.question,
+                        decision: item.decision,
+                        decidedBy: item.from_who,
+                        created: item.date
+                    })
+                })
+            }
+            if (notes.length <= 1) data = [{
+                theme: notes.theme,
+                question: notes.question,
+                decision: notes.decision,
+                decidedBy: notes.from_who,
+                created: notes.date
+            }]
+            res.status(200).json({
+                data
+            })
+        }
     })}
 })
 
