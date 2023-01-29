@@ -59,11 +59,8 @@ app.get('/notes', (req, res, next) => {
                         created: item.date
                     })
                 })
-                res.status(200).json({
-                    data
-                })
             }
-            else {
+            if (notes.length <= 1) {
                 var data = [{
                     theme: notes[0].theme,
                     question: notes[0].question,
@@ -71,10 +68,10 @@ app.get('/notes', (req, res, next) => {
                     decidedBy: notes[0].from_who,
                     created: notes[0].date
                 }]
-                res.status(200).json({
-                    data
-                })
             }
+            res.status(200).json({
+                data
+            })
         }
     })}
 })
